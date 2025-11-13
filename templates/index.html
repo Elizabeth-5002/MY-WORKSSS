@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elizabeth's Emotion AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d4aa;
+            --primary-dark: #00a885;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.3),
+                0 0 60px rgba(0, 212, 170, 0.15);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 24px 24px 0 0;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), #00ffaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+        .logo p {
+            color: var(--text-light);
+            font-size: 0.95em;
+            margin-top: 6px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.2);
+        }
+        input::placeholder { color: #64748b; }
+        input[type="file"]::file-selector-button {
+            background: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 12px;
+            transition: 0.3s;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background: var(--primary-dark);
+        }
+        .or-divider {
+            text-align: center;
+            margin: 24px 0;
+            position: relative;
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+        .or-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0; right: 0;
+            height: 1px;
+            background: var(--border);
+        }
+        .or-divider span {
+            background: var(--card);
+            padding: 0 12px;
+        }
+        .camera-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        #video, #canvas {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            display: block;
+            margin: 0 auto 16px;
+        }
+        #canvas { display: none; }
+        .btn {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #0f172a;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 170, 0.3);
+        }
+        .btn-retake {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-retake:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        .result {
+            margin-top: 30px;
+            padding: 24px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--success);
+            border-radius: 16px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .result h3 {
+            font-size: 1.8em;
+            margin: 0 0 8px;
+            color: var(--success);
+            font-weight: 700;
+        }
+        .result p {
+            color: var(--text-light);
+            font-size: 0.95em;
+        }
+        .confidence {
+            margin-top: 8px;
+            font-size: 1.1em;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text-light);
+            font-size: 0.85em;
+        }
+        footer span { color: var(--primary); }
+
+        /* CAPTURED FLASH */
+        #capture-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--primary);
+            color: #0f172a;
+            padding: 24px 48px;
+            border-radius: 50px;
+            font-size: 1.9em;
+            font-weight: 700;
+            box-shadow: 0 0 40px rgba(0, 212, 170, 0.6);
+            z-index: 10000;
+            display: none;
+            animation: pop 0.7s ease-out;
+            white-space: nowrap;
+        }
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            60% { transform: translate(-50%, -50%) scale(1.15); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>Elizabeth's Emotion AI</h1>
+            <p>Powered by Deep Learning • Real-time Analysis</p>
+        </div>
+
+        <form id="form">
+            <div class="input-group">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" placeholder="Enter your name" required>
+            </div>
+
+            <div class="input-group">
+                <label for="file">Upload Photo</label>
+                <input type="file" id="file" accept="image/*">
+            </div>
+
+            <div class="or-divider"><span>OR</span></div>
+
+            <div class="camera-container">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas"></canvas>
+                <button type="button" id="capture" class="btn btn-primary">Capture Photo</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Detect Emotion</button>
+        </form>
+
+        <div id="result" class="result">
+            <h3 id="emotion-text"></h3>
+            <p>AI Confidence</p>
+            <div class="confidence" id="confidence-text"></div>
+        </div>
+    </div>
+
+    <!-- CAPTURED MESSAGE -->
+    <div id="capture-message">CAPTURED YOUR LOVELY FACE!</div>
+
+    <footer>
+        Crafted with <span>heart</span> by Elizabeth • 2025
+    </footer>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('capture');
+        const form = document.getElementById('form');
+        const result = document.getElementById('result');
+        const emotionText = document.getElementById('emotion-text');
+        const confidenceText = document.getElementById('confidence-text');
+        const captureMessage = document.getElementById('capture-message');
+
+        let photoTaken = false;
+
+        // Start webcam
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+            .then(stream => {
+                video.srcObject = stream;
+                video.style.display = 'block';
+            })
+            .catch(() => {
+                alert("Camera access required for live capture!");
+            });
+
+        // CAPTURE / RETAKE
+        captureBtn.onclick = () => {
+            if (photoTaken) {
+                // RETAKE
+                video.style.display = 'block';
+                canvas.style.display = 'none';
+                captureBtn.textContent = 'Capture Photo';
+                captureBtn.className = 'btn btn-primary';
+                photoTaken = false;
+                document.getElementById('file').value = '';
+            } else {
+                // CAPTURE
+                if (!video.videoWidth) return alert("Camera not ready!");
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+
+                canvas.style.display = 'block';
+                video.style.display = 'none';
+
+                // FLASH MESSAGE
+                captureMessage.style.display = 'block';
+                setTimeout(() => captureMessage.style.display = 'none', 1600);
+
+                captureBtn.textContent = 'Retake Photo';
+                captureBtn.className = 'btn btn-retake';
+                photoTaken = true;
+            }
+        };
+
+        // SUBMIT
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            if (!photoTaken && !document.getElementById('file').files[0]) {
+                return alert("Please capture or upload a photo!");
+            }
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value || 'User');
+
+            if (document.getElementById('file').files[0]) {
+                formData.append('image', document.getElementById('file').files[0]);
+            } else {
+                formData.append('image_b64', canvas.toDataURL('image/jpeg', 0.9));
+            }
+
+            result.style.display = 'none';
+            try {
+                const res = await fetch('/predict', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.emotion) {
+                    emotionText.textContent = data.emotion.toUpperCase();
+                    confidenceText.innerHTML = `${(parseFloat(data.confidence) * 100).toFixed(1)}%`;
+                    result.style.display = 'block';
+                } else {
+                    alert("Error: " + (data.error || "Unknown error"));
+                }
+            } catch (err) {
+                alert("Network error. Try again.");
+            }
+        };
+    </script>
+</body>
+</html>
